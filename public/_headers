@@ -1,0 +1,22 @@
+# Cabeceras de Cloudflare Pages.
+# El ICS se sirve como text/calendar con UTF-8 y sin caché persistente:
+# así el CDN no retiene un calendario obsoleto tras un despliegue.
+# Nota: esto NO controla con qué frecuencia Apple/Google refrescan la suscripción.
+
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/calendario/bilbao-basket.ics
+  Content-Type: text/calendar; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

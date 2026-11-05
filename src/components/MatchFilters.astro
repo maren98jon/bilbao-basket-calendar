@@ -1,0 +1,55 @@
+---
+interface Props {
+  competitions: string[];
+  total: number;
+}
+
+const { competitions, total } = Astro.props;
+---
+
+<form class="filters" data-filters aria-label="Filtros de partidos">
+  <fieldset>
+    <legend>Competición</legend>
+    <div class="chip-row">
+      <label class="chip">
+        <input type="radio" name="competition" value="*" checked />
+        <span>Todas</span>
+      </label>
+      {
+        competitions.map((c) => (
+          <label class="chip">
+            <input type="radio" name="competition" value={c} />
+            <span>{c}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Local o visitante</legend>
+    <div class="chip-row">
+      <label class="chip">
+        <input type="radio" name="side" value="*" checked />
+        <span>Todos</span>
+      </label>
+      <label class="chip">
+        <input type="radio" name="side" value="local" />
+        <span>Local</span>
+      </label>
+      <label class="chip">
+        <input type="radio" name="side" value="visitante" />
+        <span>Visitante</span>
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="filters-footer">
+    <button type="button" class="btn btn-ghost btn-small" data-clear-filters>
+      Limpiar filtros
+    </button>
+    <p class="filter-count" data-filter-count aria-live="polite">
+      Mostrando {total} de {total} partidos
+    </p>
+  </div>
+</form>

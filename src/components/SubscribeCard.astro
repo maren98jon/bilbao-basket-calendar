@@ -1,0 +1,97 @@
+---
+import { config, icsUrl, webcalUrl } from '../config';
+---
+
+<div class="subscribe-card">
+  <div class="actions">
+    <a class="btn btn-primary" href={webcalUrl}>
+      Suscribirse en Apple Calendar
+    </a>
+    <a
+      class="btn"
+      href={config.googleCalendarAddUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Añadir en Google Calendar
+    </a>
+  </div>
+
+  <div class="url-box">
+    <label class="url-label" for="ics-url">Enlace del calendario (HTTPS)</label>
+    <code id="ics-url">{icsUrl}</code>
+    <button type="button" class="btn btn-small" data-copy-target="#ics-url">
+      Copiar enlace
+    </button>
+    <p class="copy-status" role="status" aria-live="polite" data-copy-status></p>
+  </div>
+
+  <details class="howto">
+    <summary>Suscribirse en Apple Calendar</summary>
+    <div class="details-body">
+      <ol>
+        <li>
+          Toca <strong>«Suscribirse en Apple Calendar»</strong>: en iPhone o iPad se
+          abre la app Calendarios para confirmar; en Mac también.
+        </li>
+        <li>
+          Si el botón no hace nada, copia la URL HTTPS de arriba y, en Apple
+          Calendar, elige <strong>Archivo → Nueva suscripción de calendario</strong>
+          y pégala.
+        </li>
+        <li>
+          Elige <strong>«Actualizar al detectar cambios»</strong> para que el
+          calendario se refresque solo.
+        </li>
+      </ol>
+      <p class="hint">
+        En iPhone también puedes pegar la URL HTTPS en Ajustes → Calendario →
+        Cuentas → Añadir cuenta → Otro → «Añadir suscrito». Los nombres exactos
+        pueden variar según la versión de iOS.
+      </p>
+    </div>
+  </details>
+
+  <details class="howto">
+    <summary>Añadirlo en Google Calendar</summary>
+    <div class="details-body">
+      <ol>
+        <li>Pulsa <strong>«Copiar enlace»</strong> para copiar la URL HTTPS.</li>
+        <li>
+          Abre Google Calendar en el navegador de un ordenador con el botón
+          «Abrir Google Calendar» (se abre en una pestaña nueva).
+        </li>
+        <li>
+          En el menú lateral, <strong>«Otros calendarios» → «Desde URL»</strong>
+          (o el enlace directo «Añadir calendario desde URL»).
+        </li>
+        <li>Pega la URL y pulsa <strong>«Añadir calendario»</strong>.</li>
+      </ol>
+      <p class="hint">
+        <strong>Desde el móvil:</strong> la aplicación de Google Calendar no
+        permite suscribirse desde una URL. Si tu navegador te redirige a la app,
+        abre este enlace en la versión de escritorio del navegador o completa el
+        proceso desde un ordenador. Alternativa temporal: descarga el archivo
+        .ics e impórtalo (es una copia puntual y no se actualizará).
+      </p>
+      <a
+        class="btn"
+        href={config.googleCalendarAddUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Abrir Google Calendar
+      </a>
+    </div>
+  </details>
+
+  <div class="download-secondary">
+    <a class="btn btn-ghost" href={config.icsPath} download>
+      Descargar archivo .ics
+    </a>
+    <p class="hint">
+      Importar el archivo es una copia única: <strong>no equivale a suscribirse</strong>
+      y no recibirá las actualizaciones.
+    </p>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+---
+import { config } from '../config';
+import { dataset } from '../data/dataset';
+import { formatReviewDate } from '../lib/format';
+
+const demo = dataset.meta.demo;
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="footer-title">{config.projectName}</p>
+      <p class="footer-note">
+        Proyecto independiente, no oficial. Sin afiliación con el club. Los
+        datos pueden contener errores: verifica siempre en las fuentes oficiales.
+      </p>
+    </div>
+    <div>
+      <ul class="footer-links">
+        <li>
+          <a href={config.icsPath}>Feed ICS del calendario</a>
+        </li>
+        <li>
+          <span class="footer-muted">
+            Datos revisados el{' '}
+            <time datetime={dataset.meta.lastReviewedAt}>
+              {formatReviewDate(dataset.meta.lastReviewedAt)}
+            </time>
+            .
+          </span>
+        </li>
+        <li>
+          <span class="footer-muted">Hora peninsular española (Europe/Madrid).</span>
+        </li>
+        {demo && <li><span class="footer-muted">Modo demostración activo.</span></li>}
+      </ul>
+    </div>
+  </div>
+</footer>

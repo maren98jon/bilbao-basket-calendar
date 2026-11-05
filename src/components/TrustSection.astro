@@ -1,0 +1,64 @@
+---
+import type { Meta } from '../data/schema';
+import { formatReviewDate } from '../lib/format';
+
+interface Props {
+  meta: Meta;
+}
+
+const { meta } = Astro.props;
+---
+
+<section class="section section-alt" aria-labelledby="h-confianza">
+  <div class="container">
+    <h2 id="h-confianza" class="section-title">Datos y mantenimiento</h2>
+    <ul class="trust-list">
+      <li>
+        <strong>Última revisión de los datos:</strong>
+        <time datetime={meta.lastReviewedAt}>{formatReviewDate(meta.lastReviewedAt)}</time>.
+        Es la fecha en que se revisaron los partidos, no la del último despliegue.
+      </li>
+      <li>
+        <strong>Temporadas incluidas:</strong>
+        {meta.seasons.join(', ')}.
+      </li>
+      {
+        meta.sources && meta.sources.length > 0 && (
+          <li>
+            <strong>Fuentes:</strong>
+            <ul class="source-list">
+              {meta.sources.map((s) => (
+                <li>
+                  {s.url ? (
+                    <a href={s.url} target="_blank" rel="noopener noreferrer">
+                      {s.label}
+                    </a>
+                  ) : (
+                    s.label
+                  )}
+                </li>
+              ))}
+            </ul>
+          </li>
+        )
+      }
+      {
+        meta.contact ? (
+          <li>
+            <strong>¿Has detectado un error en los datos?</strong>{' '}
+            <a href={meta.contact.url}>{meta.contact.label}</a>.
+          </li>
+        ) : (
+          <li>
+            <strong>Corrección de datos:</strong> todavía no hay un canal público
+            de contacto configurado.
+          </li>
+        )
+      }
+    </ul>
+    <p class="hint">
+      Los datos se mantienen de forma manual: añadir, modificar, aplazar o
+      cancelar un partido requiere editar el archivo JSON y publicar de nuevo.
+    </p>
+  </div>
+</section>

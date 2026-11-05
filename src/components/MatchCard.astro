@@ -1,0 +1,96 @@
+---
+import type { Match } from '../data/schema';
+import { config } from '../config';
+import {
+  formatDateLabel,
+  formatLongLabel,
+  formatTimeLabel,
+  isoAttr,
+} from '../lib/format';
+import { bilbaoSide, hasIcsEntry } from '../lib/matches';
+
+interface Props {
+  match: Match;
+}
+
+const { match } = Astro.props;
+const timeLabel = formatTimeLabel(match);
+const side = bilbaoSide(match, config.teamName);
+
+const postponed = match.matchStatus === 'postponed';
+const cancelled = match.matchStatus === 'cancelled';
+const finished = match.matchStatus === 'finished';
+const timeTbc = match.scheduleStatus === 'time-tbc' && !postponed;
+const dateTbc = match.scheduleStatus === 'date-tbc' && !postponed;
+const onlyWeb = !hasIcsEntry(match);
+
+const badges: string[] = [];
+if (postponed) badges.push('Aplazado');
+if (cancelled) badges.push('Cancelado');
+if (finished) badges.push('Finalizado');
+if (timeTbc) badges.push('Hora por confirmar');
+if (dateTbc) badges.push('Fecha por confirmar');
+if (onlyWeb) badges.push('Sin fecha: aún no en el calendario');
+---
+
+<li
+  class:list={[
+    'match-card',
+    { 'is-cancelled': cancelled, 'is-pending': timeTbc || dateTbc || postponed },
+  ]}
+  data-competition={match.competition}
+  data-side={side}
+>
+  <div class="match-top">
+    <time class="match-date" datetime={isoAttr(match)} title={formatLongLabel(match)}>
+      {formatDateLabel(match)}
+    </time>
+    <span class="match-time">
+      {
+        timeLabel ? (
+          <time datetime={isoAttr(match)}>{timeLabel}</time>
+        ) : (
+          <span class="pending-time">Hora por confirmar</span>
+        )
+      }
+    </span>
+  </div>
+
+  <p class="match-teams">
+    <span class:list={['team', { 'is-bilbao': match.homeTeam === config.teamName }]}>
+      {match.homeTeam}
+    </span>
+    <span class="dash" aria-hidden="true">–</span>
+    <span class:list={['team', { 'is-bilbao': match.awayTeam === config.teamName }]}>
+      {match.awayTeam}
+    </span>
+    <span class="side-chip">{side === 'local' ? 'Local' : 'Visitante'}</span>
+  </p>
+
+  <p class="match-sub">
+    {match.competition}
+    {match.venue && <span aria-hidden="true"> · </span>}
+    {match.venue}
+  </p>
+
+  {
+    (badges.length > 0 || match.notes || match.sourceUrl) && (
+      <div class="match-foot">
+        {badges.length > 0 && (
+          <ul class="badge-list" aria-label="Estado del partido">
+            {badges.map((b) => (
+              <li class="badge">{b}</li>
+            ))}
+          </ul>
+        )}
+        <div class="match-links">
+          {match.sourceUrl && (
+            <a href={match.sourceUrl} target="_blank" rel="noopener noreferrer">
+              Ver fuente
+            </a>
+          )}
+        </div>
+      </div>
+    )
+  }
+</li>

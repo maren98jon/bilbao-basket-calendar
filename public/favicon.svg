@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Calendario Bilbao Basket">
+  <rect width="32" height="32" rx="6" fill="#0d0d0d"/>
+  <circle cx="16" cy="17" r="8.5" fill="none" stroke="#ffffff" stroke-width="1.8"/>
+  <path d="M16 8.5v17M7.5 17h17M10.2 11.2c3.4 2.2 8.2 2.2 11.6 0M10.2 22.8c3.4-2.2 8.2-2.2 11.6 0" fill="none" stroke="#ffffff" stroke-width="1.4"/>
+  <path d="M8 5.5h16" stroke="#b3261e" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

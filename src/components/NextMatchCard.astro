@@ -1,0 +1,74 @@
+---
+import type { Match } from '../data/schema';
+import { config } from '../config';
+import {
+  formatDateLabel,
+  formatLongLabel,
+  formatTimeLabel,
+  isoAttr,
+} from '../lib/format';
+import { bilbaoSide } from '../lib/matches';
+
+interface Props {
+  match: Match;
+}
+
+const { match } = Astro.props;
+const timeLabel = formatTimeLabel(match);
+const side = bilbaoSide(match, config.teamName);
+const isHome = side === 'local';
+---
+
+<article class="next-match" aria-labelledby="next-match-title">
+  <p class="eyebrow" id="next-match-title">Próximo partido</p>
+
+  <p class="next-date">
+    <time datetime={isoAttr(match)} title={formatLongLabel(match)}>
+      {formatDateLabel(match)}
+    </time>
+  </p>
+
+  <p class="next-time">
+    {
+      timeLabel ? (
+        <time datetime={isoAttr(match)}>{timeLabel}</time>
+      ) : (
+        <span class="pending-time">Hora por confirmar</span>
+      )
+    }
+    <span class="tz-chip">Hora peninsular española</span>
+  </p>
+
+  <p class="next-teams">
+    <span class:list={['team', { 'is-bilbao': match.homeTeam === config.teamName }]}>
+      {match.homeTeam}
+    </span>
+    <span class="dash" aria-hidden="true">–</span>
+    <span class:list={['team', { 'is-bilbao': match.awayTeam === config.teamName }]}>
+      {match.awayTeam}
+    </span>
+  </p>
+
+  <ul class="next-meta">
+    <li>
+      <span class="meta-label">Competición</span>
+      <span>{match.competition}</span>
+    </li>
+    <li>
+      <span class="meta-label">Bilbao Basket</span>
+      <span>{isHome ? 'Local' : 'Visitante'}</span>
+    </li>
+    {
+      match.venue && (
+        <li>
+          <span class="meta-label">Recinto</span>
+          <span>{match.venue}</span>
+        </li>
+      )
+    }
+    <li>
+      <span class="meta-label">Horario</span>
+      <span>{timeLabel ? 'Hora confirmada' : 'Día confirmado, hora por confirmar'}</span>
+    </li>
+  </ul>
+</article>

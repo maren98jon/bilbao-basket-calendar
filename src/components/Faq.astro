@@ -1,0 +1,50 @@
+---
+const faq = [
+  {
+    q: '¿Es gratuito?',
+    a: 'Sí. Consultar la web y suscribirse al calendario es totalmente gratuito; no hay pagos, donaciones ni publicidad.',
+  },
+  {
+    q: '¿Es oficial?',
+    a: 'No. Es un proyecto independiente sin relación con el club. Los datos proceden de fuentes mantenidas manualmente por la persona responsable del proyecto.',
+  },
+  {
+    q: '¿Se actualiza automáticamente?',
+    a: 'Los datos del sitio se actualizan manualmente: la persona responsable revisa el archivo de partidos y publica un nuevo despliegue. Una vez suscrito, tu aplicación de calendario (Apple Calendar o Google Calendar) decide cada cuánto refresca el feed; no hay notificaciones instantáneas.',
+  },
+  {
+    q: '¿Por qué todavía no aparece un cambio de horario?',
+    a: 'Puede deberse a dos cosas: aún no hemos publicado la revisión con el cambio, o tu aplicación aún no ha refrescado la suscripción. No se garantizan cambios instantáneos; antes de desplazarte, comprueba siempre el horario en las fuentes oficiales.',
+  },
+  {
+    q: '¿Cuál es la diferencia entre importar y suscribirse?',
+    a: 'Importar un archivo .ics crea una copia estática de los partidos en tu calendario: no volverá a cambiar. Suscribirse añade un calendario enlazado al feed público: cuando actualicemos los datos y tu aplicación refresque la suscripción, los cambios llegarán solos.',
+  },
+  {
+    q: '¿Cómo elimino el calendario?',
+    a: 'En Apple Calendar: en la lista de calendarios, control+clic (o clic derecho) sobre el calendario → «Borrar calendario» (o «Dejar de suscribirse»). En Google Calendar web: en «Otros calendarios», menú ⋮ junto al calendario → «Ajustes» → «Eliminar calendario».',
+  },
+];
+---
+
+<section class="section" aria-labelledby="h-faq">
+  <div class="container">
+    <h2 id="h-faq" class="section-title">Preguntas frecuentes</h2>
+    <div class="faq-list">
+      {
+        faq.map((item) => (
+          <details class="faq-item">
+            <summary>{item.q}</summary>
+            <div class="details-body">
+              <p>{item.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+    <p class="trust-note">
+      El calendario es una ayuda de consulta: <strong>no sustituye a la comprobación
+      del horario en las fuentes oficiales antes de desplazarte</strong>.
+    </p>
+  </div>
+</section>

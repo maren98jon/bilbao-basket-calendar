@@ -1,0 +1,195 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import DemoBanner from '../components/DemoBanner.astro';
+import { absoluteUrl, config } from '../config';
+import { dataset } from '../data/dataset';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = `${config.projectName} — próximos partidos y calendario iCalendar`,
+  description = config.description,
+} = Astro.props;
+
+const canonical = absoluteUrl('/');
+const demo = dataset.meta.demo;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {
+      demo ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <meta name="robots" content="index, follow" />
+      )
+    }
+    <meta name="theme-color" content="#0d0d0d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={config.projectName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_ES" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <link
+      rel="alternate"
+      type="text/calendar"
+      charset="UTF-8"
+      title={config.calendarName}
+      href={config.icsPath}
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <SiteHeader />
+    {demo && <DemoBanner />}
+    <main id="contenido">
+      <slot />
+    </main>
+    <SiteFooter />
+
+    <script>
+      // Utilidades de feedback accesible
+      const copyStatus = document.querySelector<HTMLElement>('[data-copy-status]');
+
+      function announce(message: string, isError = false): void {
+        if (!copyStatus) return;
+        copyStatus.textContent = message;
+        copyStatus.dataset.state = isError ? 'error' : 'ok';
+      }
+
+      function flashButton(btn: HTMLButtonElement, label: string): void {
+        const previous = btn.textContent ?? '';
+        btn.textContent = label;
+        btn.dataset.flash = '1';
+        window.setTimeout(() => {
+          btn.textContent = previous;
+          delete btn.dataset.flash;
+        }, 2500);
+      }
+
+      async function copyToClipboard(text: string): Promise<boolean> {
+        if (navigator.clipboard && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return true;
+          } catch {
+            // continuamos con el respaldo
+          }
+        }
+        return false;
+      }
+
+      function fallbackCopy(target: HTMLElement): boolean {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        try {
+          return document.execCommand('copy');
+        } catch {
+          return false;
+        }
+      }
+
+      document.querySelectorAll<HTMLButtonElement>('[data-copy-target]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const selector = btn.getAttribute('data-copy-target');
+          const target = selector ? document.querySelector<HTMLElement>(selector) : null;
+          const text = target?.textContent?.trim() ?? '';
+          if (!text) return;
+
+          void copyToClipboard(text).then((ok) => {
+            if (ok) {
+              announce('Enlace copiado al portapapeles.');
+              flashButton(btn, 'Copiado');
+              return;
+            }
+            if (target && fallbackCopy(target)) {
+              announce('Enlace copiado al portapapeles.');
+              flashButton(btn, 'Copiado');
+              return;
+            }
+            if (target) {
+              const selection = window.getSelection();
+              const range = document.createRange();
+              range.selectNodeContents(target);
+              selection?.removeAllRanges();
+              selection?.addRange(range);
+            }
+            announce(
+              'No se pudo copiar automáticamente. El enlace está seleccionado: cópialo con Cmd+C o Ctrl+C.',
+              true,
+            );
+          });
+        });
+      });
+
+      // Filtros de la lista de próximos partidos
+      const filtersForm = document.querySelector<HTMLFormElement>('[data-filters]');
+      const matchList = document.querySelector<HTMLElement>('[data-match-list]');
+      const emptyState = document.querySelector<HTMLElement>('[data-filter-empty]');
+      const countLabel = document.querySelector<HTMLElement>('[data-filter-count]');
+
+      function applyFilters(): void {
+        if (!filtersForm || !matchList) return;
+        const competitionInput = filtersForm.querySelector<HTMLInputElement>(
+          'input[name="competition"]:checked',
+        );
+        const sideInput = filtersForm.querySelector<HTMLInputElement>(
+          'input[name="side"]:checked',
+        );
+        const competition = competitionInput?.value ?? '*';
+        const side = sideInput?.value ?? '*';
+
+        const cards = matchList.querySelectorAll<HTMLElement>('.match-card');
+        let visible = 0;
+        cards.forEach((card) => {
+          const cardCompetition = card.dataset.competition ?? '';
+          const cardSide = card.dataset.side ?? '';
+          const show =
+            (competition === '*' || competition === cardCompetition) &&
+            (side === '*' || side === cardSide);
+          card.hidden = !show;
+          if (show) visible += 1;
+        });
+
+        if (emptyState) emptyState.hidden = visible > 0;
+        if (countLabel) {
+          countLabel.textContent = `Mostrando ${visible} de ${cards.length} partidos`;
+        }
+      }
+
+      filtersForm?.addEventListener('change', applyFilters);
+
+      document
+        .querySelector<HTMLButtonElement>('[data-clear-filters]')
+        ?.addEventListener('click', () => {
+          filtersForm
+            ?.querySelectorAll<HTMLInputElement>('input[type="radio"]')
+            .forEach((radio) => {
+              radio.checked = radio.value === '*';
+            });
+          applyFilters();
+        });
+
+      applyFilters();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NextMatchCard from '../components/NextMatchCard.astro';
+import SubscribeCard from '../components/SubscribeCard.astro';
+import MatchFilters from '../components/MatchFilters.astro';
+import MatchCard from '../components/MatchCard.astro';
+import TrustSection from '../components/TrustSection.astro';
+import Faq from '../components/Faq.astro';
+import { dataset } from '../data/dataset';
+import { buildMatchesView } from '../lib/matches';
+
+const view = buildMatchesView(dataset, new Date());
+---
+
+<BaseLayout>
+  <section class="section" aria-labelledby="h-proximo">
+    <div class="container hero-grid">
+      <div>
+        <h2 id="h-proximo" class="section-title">Próximo partido</h2>
+        {
+          view.next ? (
+            <NextMatchCard match={view.next} />
+          ) : (
+            <p class="empty-state">
+              No hay próximos partidos con fecha publicada. Suscríbete al
+              calendario para recibir las novedades cuando las haya.
+            </p>
+          )
+        }
+      </div>
+      <div>
+        <h2 id="h-suscripcion" class="section-title">Suscríbete al calendario</h2>
+        <SubscribeCard />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="h-partidos">
+    <div class="container">
+      <h2 id="h-partidos" class="section-title">Próximos partidos</h2>
+
+      {
+        view.upcoming.length > 0 ? (
+          <>
+            <MatchFilters
+              competitions={view.competitions}
+              total={view.upcoming.length}
+            />
+            <ul class="match-list" data-match-list>
+              {view.upcoming.map((m) => (
+                <MatchCard match={m} />
+              ))}
+            </ul>
+            <p class="empty-state" data-filter-empty hidden>
+              Ningún partido coincide con los filtros seleccionados. Prueba a
+              limpiarlos.
+            </p>
+          </>
+        ) : (
+          <p class="empty-state">
+            No hay próximos partidos con fecha publicada en este momento.
+          </p>
+        )
+      }
+
+      {
+        view.undated.length > 0 && (
+          <div class="subsection">
+            <h3 id="h-sin-fecha">Sin fecha confirmada</h3>
+            <p class="hint">
+              Estos partidos aún no tienen día publicado (o están aplazados sin
+              nueva fecha). Aparecerán en la lista cuando haya novedades.
+            </p>
+            <ul class="match-list" aria-labelledby="h-sin-fecha">
+              {view.undated.map((m) => (
+                <MatchCard match={m} />
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        view.past.length > 0 && (
+          <div class="subsection">
+            <details class="history">
+              <summary>Histórico ({view.past.length})</summary>
+              <div class="details-body">
+                <ul class="match-list">
+                  {view.past.map((m) => (
+                    <MatchCard match={m} />
+                  ))}
+                </ul>
+              </div>
+            </details>
+          </div>
+        )
+      }
+
+      <p class="tz-note">
+        Las horas indicadas corresponden a la hora peninsular española
+        (Europe/Madrid).
+      </p>
+    </div>
+  </section>
+
+  <TrustSection meta={dataset.meta} />
+  <Faq />
+</BaseLayout>
